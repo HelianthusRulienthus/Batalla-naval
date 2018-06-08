@@ -1,0 +1,2 @@
+Forma en que se utilizan los mapas:
+mapa[x][y]
