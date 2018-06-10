@@ -4,7 +4,7 @@
 	struct node{
 		struct node* sig;
 		int y;
-		struct barco* owner;
+		int* barco;
 	}
 	
 	struct list{

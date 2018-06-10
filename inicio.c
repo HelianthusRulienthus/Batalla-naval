@@ -20,12 +20,13 @@ void init(struct list** jugador1,
 			short*** tableros,
 			short*** anotadores)
 {
-	jugador1 = malloc(sizeof(list)*10);
-	jugador2 = malloc(sizeof(list)*10);
+	(*jugador1) = malloc(sizeof(list)*10);
+	(*jugador2) = malloc(sizeof(list)*10);
 	
 	for(int i=0; i<10; i++){
-		jugador1[i].sig = jugador2[i].sig = null;
-		jugador1[i].largo = jugador2[i].largo = null;
+		(*jugador1)[i].sig = (*jugador2)[i].sig = \
+		(*jugador1)[i].barco = (*jugador2)[i].barco = nullptr;
+		(*jugador1)[i].largo = (*jugador2)[i].largo = 0;
 	}
 	
 	for(int j=0; j<10; j++){
@@ -115,7 +116,7 @@ void construir(struct list** jugadores,
 			
 		if(!entrada_valida){
 			printf("Forma del barco erronea. Vuelva a intentar");
-			wait(3000);
+			sleep(2);
 			
 			goto insert_barco;
 		}
@@ -126,34 +127,36 @@ void construir(struct list** jugadores,
 				if(alrededores(tableros[jugador], x1, i)){
 					printf("El rango seleccionado coincide con los alrededores o con una "
 					"casilla de otro barco. Vuelva a intentar");
-					wait(3000);
+					sleep(2);
 					
 					goto insert_barco;
 				}
 			}
 			
 			//dibujar barco
+			int *aux = malloc(sizeof(int)); (*aux) = entrada+1;
 			for(int i=min(y1, y2); i < max(y1, y2); i++){
 				tableros[jugador][x1][i] = ocupado;
 				
-				insertList(&jugadores[jugador][x1], i);
+				insertList(&jugadores[jugador][x1], i, aux);
 			}
 		} else { // dist_y = 0
 			for(int i=min(x1, x2); i<max(x1, x2); i++){
 				if(alrededores(tableros[jugador], i, y1)){
 					printf("El rango seleccionado coincide con los alrededores o con una "
 					"casilla de otro barco. Vuelva a intentar");
-					wait(3000);
+					sleep(2);
 					
 					goto insert_barco;
 				}
 			}
 				
 			//dibujar barco
+			int *aux = malloc(sizeof(int)); (*aux) = entrada+1;
 			for(int i=min(x1, x2); i < max(x1, x2); i++){
 				tableros[jugador][i][y1] = ocupado;
 				
-				insertList(&jugadores[jugador][i], y1);
+				insertList(&jugadores[jugador][i], y1, aux);
 			}
 		}
 			
