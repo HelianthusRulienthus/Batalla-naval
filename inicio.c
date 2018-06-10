@@ -59,11 +59,11 @@ void construir(struct list** jugadores,
 		nuevo_barco:
 		cls();
 		
-		printf("\tJugador actual: Jugador%d", jugador);
+		printf("\tJugador actual: Jugador%d\n", jugador);
 		printf("\tBarcos restantes:\n");
 		
 		for(int i=0; i<4; i++)
-			printf("%d\t%s", cantidades[i], barcos[i]);
+			printf("%d\t%s\n", cantidades[i], barcos[i]);
 		
 		confirm_input:
 		
