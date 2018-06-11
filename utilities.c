@@ -17,4 +17,12 @@ void insertList(struct list* List, int y, int* barco){
 	}
 }
 
+void cls(){
+	fflush(stdout);
+#ifdef WIN32
+	system("cls");
+#else
+	system("clear");
+#endif
+}
 
