@@ -1,14 +1,27 @@
 #include "inicio.h"
 #include "utilities.h"
-#include <cstdio.h>
-#include <math.h>
+#include "juego.h"
+#include <stdio.h>
+#include <stdbool.h>
 #define ocupado 1
 #define agua 0
+#define legal(x) (x>=0 && x<10)
+
+int max(int x, int y){
+	if(x > y) return x;
+	else return y;
+}
+
+int min(int x, int y){
+	if(x < y) return x;
+	else return y;
+}
 			
-bool alrededores(short** tablero, int x, int y){
+bool alrededores(int tablero[10][10], int x, int y){
 	for(int i=-1; i<2; i++){
 		for(int j=-1; j<2; j++){
-			if(tablero[x-i][y-j] == ocupado)
+			if(legal(x-i) && legal(y-j) &&
+				tablero[x-i][y-j] == ocupado)
 				return true;
 		}
 	}
@@ -17,31 +30,29 @@ bool alrededores(short** tablero, int x, int y){
 
 void init(struct list** jugador1,
 			struct list** jugador2,
-			short*** tableros,
-			short*** anotadores)
+			int tableros[2][10][10],
+			int anotadores[2][10][10])
 {
-	(*jugador1) = malloc(sizeof(list)*10);
-	(*jugador2) = malloc(sizeof(list)*10);
+	(*jugador1) = malloc(sizeof(struct list)*10);
+	(*jugador2) = malloc(sizeof(struct list)*10);
 	
 	for(int i=0; i<10; i++){
-		(*jugador1)[i].sig = (*jugador2)[i].sig = \
-		(*jugador1)[i].barco = (*jugador2)[i].barco = nullptr;
+		(*jugador1)[i].list = (*jugador2)[i].list = NULL;
 		(*jugador1)[i].largo = (*jugador2)[i].largo = 0;
 	}
 	
 	for(int j=0; j<10; j++){
 		for(int k=0; k<10; k++){
-			tableros[0][j][k] = \ 
+			tableros[0][j][k] = \
 			tableros[1][j][k] = agua;
-			anotadores[0][i][j] = \
-			anotadores[1][i][j] = agua;
+			anotadores[0][j][k] = \
+			anotadores[1][j][k] = agua;
 		}
 	}
 	
 }
 
-void construir(struct list** jugadores,
-			short*** tableros)
+void construir(struct list** jugadores, int tableros[2][10][10])
 {
 	/*
 	Se predefinen para la cantidad de barcos y el tamaño:
@@ -51,26 +62,26 @@ void construir(struct list** jugadores,
 	1 acorazado
 	*/
 	
-	short jugador = 0;
+	int jugador = 0;
 	
 	do{		
-		short cantidades[] = {1, 2, 3, 1};
+		int cantidades[] = {1, 2, 3, 1};
 		const char* barcos[] = {"Submarino", "Destructor",
 								"Crucero", "Acorazado"};
-		nuevo_barco:
+		nuevo_barco:{
 		cls();
 		
-		printf("\tJugador actual: Jugador%d\n", jugador);
+		printf("\tJugador actual: Jugador%i\n", jugador);
 		printf("\tBarcos restantes:\n");
 		
 		for(int i=0; i<4; i++)
-			printf("%d\t%s\n", cantidades[i], barcos[i]);
+			printf("%i\t%s\n", cantidades[i], barcos[i]);
 		
-		confirm_input:
-		
-		short entrada;
+		int entrada;
+		confirm_input:{
+
 		printf("Ingrese un indice(0-3) para seleccionar un barco");
-		scanf("%d%*c", &entrada);
+		scanf("%i%*c", &entrada);
 		
 		if(entrada < 0 || entrada > 3){
 			printf("Indice erroneo. Vuelva a intentar");
@@ -80,11 +91,12 @@ void construir(struct list** jugadores,
 			printf("Cantidad del barco \"%s\" es 0. Vuelva a intentar", barcos[entrada]);
 			goto confirm_input;
 		}
+		}
 		
 		{//else
-		short x1, x2, y1, y2;
+		int x1, x2, y1, y2;
 			
-		insert_barco:
+		insert_barco:{
 		cls();
 		
 		mostrar_mapa(tableros[jugador]);
@@ -94,19 +106,19 @@ void construir(struct list** jugadores,
 		do{
 			//incluir mensaje de error
 			printf("Ingrese un valor x e y inicial");
-			scanf("%d%d%*c", x1, y1);
+			scanf("%i%i%*c", &x1, &y1);
 		}while(x1 < 0 || x1 >= 10 ||
 				y1 < 0 || y1 >= 10);
 					
 		do{
 			//incluir mensaje de error
 			printf("Ingrese un valor x e y final");
-			scanf("%d%d%*c", x2, y2);
+			scanf("%i%i%*c", &x2, &y2);
 		}while(x2 < 0 || x2 >= 10 ||
 				y2 < 0 || y2 >= 10);
 					
-		short dist_x = abs(x2-x1);
-		short dist_y = abs(y2-y1);
+		int dist_x = abs(x2-x1);
+		int dist_y = abs(y2-y1);
 			
 		//entrada+1 = largo barco
 		bool entrada_valida = (
@@ -159,7 +171,8 @@ void construir(struct list** jugadores,
 				insertList(&jugadores[jugador][i], y1, aux);
 			}
 		}
-			
+		}
+		
 		cantidades[entrada]--;
 		}
 		
@@ -167,7 +180,7 @@ void construir(struct list** jugadores,
 			if(cantidades[i] != 0)
 				goto nuevo_barco;
 		}
-		
+		}
 		jugador++;
 	}while(jugador < 2);
 	

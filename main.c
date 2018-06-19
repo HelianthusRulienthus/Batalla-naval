@@ -1,20 +1,31 @@
-#include <cstdio>
+#include <stdbool.h>
+#include <stdio.h>
 #include "juego.h"
 #include "inicio.h"
+#include "utilities.h"
 
 int main(){
-	struct list jugador1*, jugador2*;
-	short tableros[2][10][10], anotadores[2][10][10];
+	struct list * jugadores[2];
+	int tableros[2][10][10], anotadores[2][10][10];
 	
-	init(&jugador1, &jugador2, tableros);
+	init(&jugadores[0], &jugadores[1], tableros, anotadores);
 	
-	construir({jugador1, jugador2}, tableros);
+	construir(jugadores, tableros);
 	
-	while(jugar(jugador1,
-				jugador2,
-				tablero1,
-				tablero2)
-	);
-	
-	terminar();
+	bool bandera = true;
+	bool turno = true;
+	do{
+		printf("Jugador %d, es su turno...", turno);
+		printf("Presione enter para continuar");
+		fflush(stdin);
+		getchar();
+		
+		cls();
+		
+		bandera = juego(jugadores[turno], jugadores[!turno], 
+				tableros[turno], anotadores[turno]);
+		turno = !turno;
+	}while(bandera);
+		
+	//terminar();
 }
